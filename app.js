@@ -38,20 +38,44 @@ app.get('/api/products/:id', (req, res, next) => {
 // Add product
 app.post('/api/products/', (req, res, next) => {
     db.products.insert(req.body, (err, doc) => {
-        if(err){
+        if (err) {
             res.send(err);
         }
         res.json(doc);
     });
 });
 
-// Add product
+// Update product
 app.put('/api/products/:id', (req, res, next) => {
-    res.send("Hello Node.js");
+    db.products.findAndModify({
+        query: {
+            _id: mongojs.ObjectId(req.params.id)
+        },
+        update: {
+            $set: {
+                name: req.body.name,
+                category: req.body.category,
+                details: req.body.details
+            }
+        },
+        new: true
+    }, (err, doc) => {
+        if (err) {
+            res.send(err);
+        }
+        res.json(doc);
+    });
 });
 
-app.put('/api/products/:id', (req, res, next) => {
-    res.send("Hello Node.js");
+app.delete('/api/products/:id', (req, res, next) => {
+     db.products.remove({
+        _id: mongojs.ObjectId(req.params.id)
+    }, (err, doc) => {
+        if (err) {
+            res.send(err);
+        }
+        res.json(doc);
+    });
 });
 
 app.listen(port, () => {
